@@ -39,10 +39,45 @@ Tracks organize shapes vertically in the timeline:
 
 ```json
 {
+  "width": 1920,
+  "height": 1080,
+  "duration": 15,
+  "backgroundColor": "#1a1a2e",
   "shapes": [
-    { "type": "video", "trackId": "track-1", "startTime": 0, "duration": 10, "src": "..." },
-    { "type": "text", "trackId": "track-2", "startTime": 2, "duration": 5, "text": "Title" },
-    { "type": "image", "trackId": "track-3", "startTime": 3, "duration": 4, "src": "..." }
+    {
+      "type": "rect",
+      "trackId": "track-1",
+      "startTime": 0,
+      "duration": 10,
+      "x": 0,
+      "y": 0,
+      "width": 1920,
+      "height": 1080,
+      "fillColor": "#1a1a2e"
+    },
+    {
+      "type": "text",
+      "trackId": "track-2",
+      "startTime": 2,
+      "duration": 5,
+      "x": 960,
+      "y": 540,
+      "text": "Title",
+      "fontSize": 72,
+      "color": "#ffffff",
+      "align": "center"
+    },
+    {
+      "type": "image",
+      "trackId": "track-3",
+      "startTime": 3,
+      "duration": 4,
+      "x": 100,
+      "y": 100,
+      "width": 200,
+      "height": 150,
+      "src": "https://picsum.photos/200/150"
+    }
   ]
 }
 ```
@@ -52,9 +87,9 @@ Tracks organize shapes vertically in the timeline:
 ```json
 {
   "shapes": [
-    { "type": "text", "startTime": 0, "duration": 2, "text": "First" },
-    { "type": "text", "startTime": 2, "duration": 2, "text": "Second" },
-    { "type": "text", "startTime": 4, "duration": 2, "text": "Third" }
+    { "type": "text", "startTime": 0, "duration": 2, "x": 960, "y": 540, "text": "First", "fontSize": 48, "color": "#fff", "align": "center" },
+    { "type": "text", "startTime": 2, "duration": 2, "x": 960, "y": 540, "text": "Second", "fontSize": 48, "color": "#fff", "align": "center" },
+    { "type": "text", "startTime": 4, "duration": 2, "x": 960, "y": 540, "text": "Third", "fontSize": 48, "color": "#fff", "align": "center" }
   ]
 }
 ```
@@ -75,12 +110,26 @@ Tracks organize shapes vertically in the timeline:
   "volume": 100,
   "fadeIn": 0.5,
   "fadeOut": 0.5,
-  "filters": {
-    "brightness": 100,
-    "contrast": 100
-  }
+  "cornerRadius": 0,
+  "strokeColor": "transparent",
+  "lineWidth": 2
 }
 ```
+
+### Video Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `src` | string | - | Video URL (must be CORS-friendly) |
+| `volume` | number | 100 | Volume level (0-100) |
+| `fadeIn` | number | 0 | Audio fade in duration (seconds) |
+| `fadeOut` | number | 0 | Audio fade out duration (seconds) |
+| `mediaStartOffset` | number | 0 | Start playback from this offset |
+| `cornerRadius` | number | 0 | Rounded corners |
+| `strokeColor` | string | - | Border color |
+| `lineWidth` | number | 1 | Border width |
+| `cropX`, `cropY` | number | - | Crop offset in source |
+| `cropWidth`, `cropHeight` | number | - | Crop dimensions |
 
 **CORS-friendly video sources**:
 - Pexels: `https://videos.pexels.com/video-files/[id]/[filename].mp4`
@@ -98,7 +147,8 @@ Tracks organize shapes vertically in the timeline:
   "volume": 80,
   "fadeIn": 1,
   "fadeOut": 2,
-  "muted": false
+  "muted": false,
+  "trackId": "track-audio"
 }
 ```
 
@@ -106,6 +156,7 @@ Tracks organize shapes vertically in the timeline:
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `src` | string | - | Audio URL |
 | `volume` | number | 100 | Volume level (0-100) |
 | `fadeIn` | number | 0 | Fade in duration (seconds) |
 | `fadeOut` | number | 0 | Fade out duration (seconds) |
@@ -113,6 +164,56 @@ Tracks organize shapes vertically in the timeline:
 
 **CORS-friendly audio sources**:
 - Pixabay Music: `https://cdn.pixabay.com/audio/[year]/[month]/[day]/audio-[id].mp3`
+
+## Screen Capture
+
+For recording screen shares in video mode:
+
+```json
+{
+  "type": "screenCapture",
+  "x": 0,
+  "y": 0,
+  "width": 1920,
+  "height": 1080,
+  "cornerRadius": 0,
+  "opacity": 100,
+  "startTime": 0,
+  "duration": 60,
+  "trackId": "track-1"
+}
+```
+
+## Webcam Capture
+
+Viewport-fixed webcam overlay (stays in corner regardless of pan/zoom):
+
+```json
+{
+  "type": "webcamCapture",
+  "viewportMarginRight": 24,
+  "viewportMarginBottom": 24,
+  "width": 320,
+  "height": 240,
+  "cornerRadius": 16,
+  "rotation": 0,
+  "opacity": 100,
+  "strokeColor": null,
+  "lineWidth": 2,
+  "startTime": 0,
+  "duration": 60,
+  "trackId": "track-2"
+}
+```
+
+### Webcam Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `viewportMarginRight` | number | 24 | Distance from right edge (pixels) |
+| `viewportMarginBottom` | number | 24 | Distance from bottom edge (pixels) |
+| `cornerRadius` | number | 16 | Rounded corners |
+| `strokeColor` | string | null | Border color |
 
 ## Video Resolutions
 
@@ -136,8 +237,8 @@ Tracks organize shapes vertically in the timeline:
   "height": 1920,
   "currentPreset": "Vertical HD",
   "duration": 15,
-  "background": "#000000",
-  "shapes": [...]
+  "backgroundColor": "#000000",
+  "shapes": []
 }
 ```
 

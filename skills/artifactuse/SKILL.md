@@ -42,7 +42,7 @@ Activate this skill when the user asks for:
 {
   "width": 800,
   "height": 600,
-  "background": "#ffffff",
+  "backgroundColor": "#ffffff",
   "shapes": [...]
 }
 ```
@@ -54,7 +54,7 @@ Activate this skill when the user asks for:
   "height": 1080,
   "currentPreset": "1080p",
   "duration": 15,
-  "background": "#1a1a2e",
+  "backgroundColor": "#1a1a2e",
   "shapes": [...]
 }
 ```
@@ -73,20 +73,22 @@ Activate this skill when the user asks for:
 
 ## Quick Shape Reference
 
-All shapes support: `x`, `y`, `fill`, `stroke`, `strokeWidth`, `rotation`, `opacity`
+All shapes support: `x`, `y`, `fillColor`, `color` (stroke), `lineWidth`, `rotation`, `opacity`
 
 | Type | Key Properties |
 |------|----------------|
 | `rect` | `width`, `height`, `cornerRadius` |
-| `circle` | `radius` |
-| `ellipse` | `radiusX`, `radiusY` |
-| `text` | `text`, `fontSize`, `fontFamily`, `fontWeight`, `textAlign` |
+| `circle` | `radius` (x,y is center) |
+| `ellipse` | `radiusX`, `radiusY` (x,y is center) |
+| `text` | `text`, `fontSize`, `fontFamily`, `bold`, `italic`, `align` |
 | `image` | `src`, `width`, `height` |
-| `line` | `x2`, `y2` |
-| `arrow` | `x2`, `y2`, `arrowType`, `arrowHeadStyle` |
+| `line` | `x1`, `y1`, `x2`, `y2` |
+| `arrow` | `x1`, `y1`, `x2`, `y2`, `arrowType`, `arrowHeadStyle` |
 | `path` | `segments[]`, `closed` |
 | `group` | `children[]` |
 | `frame` | `children[]` (no rotation) |
+| `diamond` | `width`, `height` (x,y is center) |
+| `triangle` | `size` (x,y is center) |
 
 **For video mode, shapes also support**: `startTime`, `duration`, `trackId`
 
@@ -104,7 +106,29 @@ For detailed information, read these reference files:
 2. **Video tracks**: Overlapping clips MUST have different `trackId` values
 3. **Animations**: Use the `fx` array on shapes, NOT a `keyframes` property
 4. **Media sources**: Use CORS-friendly URLs (Unsplash, Pexels, Pixabay)
-5. **Centered text**: When `textAlign: "center"`, the `x` is the center point
+5. **Centered text**: When `align: "center"`, the `x` is the center point
+6. **Property names**: Use `fillColor` for fill, `color` for stroke, `lineWidth` for stroke width
+
+## Quick Example: Canvas
+
+```canvas
+{
+  "width": 800,
+  "height": 600,
+  "backgroundColor": "#ffffff",
+  "shapes": [
+    {
+      "type": "circle",
+      "x": 400,
+      "y": 300,
+      "radius": 100,
+      "fillColor": "#3498db",
+      "color": "#2980b9",
+      "lineWidth": 3
+    }
+  ]
+}
+```
 
 ## Quick Example: Animated Title
 
@@ -114,7 +138,7 @@ For detailed information, read these reference files:
   "height": 1080,
   "currentPreset": "1080p",
   "duration": 10,
-  "background": "#1a1a2e",
+  "backgroundColor": "#1a1a2e",
   "shapes": [
     {
       "type": "text",
@@ -123,9 +147,9 @@ For detailed information, read these reference files:
       "text": "Welcome",
       "fontSize": 120,
       "fontFamily": "Arial",
-      "fontWeight": "bold",
-      "fill": "#ffffff",
-      "textAlign": "center",
+      "bold": true,
+      "color": "#ffffff",
+      "align": "center",
       "startTime": 0,
       "duration": 5,
       "fx": [

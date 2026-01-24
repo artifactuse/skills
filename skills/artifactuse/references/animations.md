@@ -27,7 +27,7 @@ Add an `fx` array to any shape to apply filters and animations:
   "y": 100,
   "width": 400,
   "height": 300,
-  "fill": "#3498db",
+  "fillColor": "#3498db",
   "startTime": 0,
   "duration": 5,
   "fx": [
@@ -102,6 +102,8 @@ Add an `fx` array to any shape to apply filters and animations:
 | Animation | Description |
 |-----------|-------------|
 | `fade` | Opacity fade |
+| `fadeIn` | Fade in (alias for fade + in) |
+| `fadeOut` | Fade out (alias for fade + out) |
 | `slideLeft` | Slide from left |
 | `slideRight` | Slide from right |
 | `slideUp` | Slide from bottom |
@@ -128,7 +130,7 @@ Add an `fx` array to any shape to apply filters and animations:
   "y": 440,
   "width": 400,
   "height": 200,
-  "fill": "#3498db",
+  "fillColor": "#3498db",
   "startTime": 0,
   "duration": 5,
   "fx": [
@@ -161,6 +163,10 @@ Animated cursors for tutorials and demos:
   "fillColor": "#ffffff",
   "color": "#000000",
   "cursorScale": 1.0,
+  "opacity": 100,
+  "showPath": true,
+  "pathColor": "#6366f1",
+  "pathOpacity": 50,
   "startTime": 0,
   "duration": 5,
   "trackId": "track-2",
@@ -171,8 +177,7 @@ Animated cursors for tutorials and demos:
   ],
   "clicks": [
     { "time": 2, "effect": "ripple", "color": "#4a90d9", "size": 40, "duration": 0.4 }
-  ],
-  "showPath": false
+  ]
 }
 ```
 
@@ -188,16 +193,28 @@ Animated cursors for tutorials and demos:
 | `grab` | Open hand for draggable |
 | `grabbing` | Closed hand during drag |
 
+### Cursor Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `cursorType` | string | "pointer" | Cursor style |
+| `fillColor` | string | "#ffffff" | Cursor fill color |
+| `color` | string | "#000000" | Cursor stroke color |
+| `cursorScale` | number | 1.0 | Scale multiplier |
+| `showPath` | boolean | true | Show motion path |
+| `pathColor` | string | "#6366f1" | Path line color |
+| `pathOpacity` | number | 50 | Path opacity (0-100) |
+
 ### Keyframe Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `time` | number | Travel duration (seconds) |
-| `x`, `y` | number | Position |
-| `holdTime` | number | Pause at position (seconds) |
+| `time` | number | Travel duration to this point (seconds) |
+| `x`, `y` | number | Target position |
+| `holdTime` | number | Pause at this position (seconds) |
 | `easing` | string | Easing to next keyframe |
-| `controlIn` | object | Bezier control `{ x, y }` |
-| `controlOut` | object | Bezier control `{ x, y }` |
+| `controlIn` | `{ x, y }` | Bezier control point (incoming) |
+| `controlOut` | `{ x, y }` | Bezier control point (outgoing) |
 
 ### Click Effects
 
@@ -211,11 +228,11 @@ Animated cursors for tutorials and demos:
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `time` | number | - | When click occurs |
+| `time` | number | - | When click occurs (seconds) |
 | `effect` | string | "ripple" | Effect type |
 | `color` | string | "#4a90d9" | Effect color |
 | `size` | number | 40 | Effect size (px) |
-| `duration` | number | 0.4 | Effect duration |
+| `duration` | number | 0.4 | Effect duration (seconds) |
 
 ## Camera Animation (Viewport Keyframes)
 
@@ -237,8 +254,8 @@ Create pan and zoom effects:
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `viewport.x` | number | Pan X offset |
-| `viewport.y` | number | Pan Y offset |
+| `viewport.x` | number | Pan X offset (negative = pan right) |
+| `viewport.y` | number | Pan Y offset (negative = pan down) |
 | `viewport.zoom` | number | Zoom level (1.0 = 100%) |
 | `easing` | string | Transition easing |
 
@@ -246,7 +263,22 @@ Create pan and zoom effects:
 
 ```json
 {
+  "width": 1920,
+  "height": 1080,
+  "duration": 10,
+  "backgroundColor": "#1a1a2e",
   "shapes": [
+    {
+      "type": "text",
+      "x": 960,
+      "y": 540,
+      "text": "Hello",
+      "fontSize": 72,
+      "color": "#ffffff",
+      "align": "center",
+      "startTime": 0,
+      "duration": 10
+    },
     {
       "type": "viewportKeyframe",
       "startTime": 0,
@@ -304,3 +336,78 @@ Global effects placed on FX tracks:
 | `pixelate` | size | Pixelation |
 | `sharpen` | amount | Sharpening |
 | `emboss` | - | Embossed 3D |
+
+## Complete Video Example with Animations
+
+```json
+{
+  "width": 1920,
+  "height": 1080,
+  "currentPreset": "1080p",
+  "duration": 15,
+  "backgroundColor": "#1a1a2e",
+  "shapes": [
+    {
+      "type": "rect",
+      "x": 0,
+      "y": 0,
+      "width": 1920,
+      "height": 1080,
+      "fillColor": "#1a1a2e",
+      "startTime": 0,
+      "duration": 15,
+      "trackId": "track-1"
+    },
+    {
+      "type": "text",
+      "x": 960,
+      "y": 400,
+      "text": "Welcome",
+      "fontSize": 120,
+      "fontFamily": "Arial",
+      "bold": true,
+      "color": "#ffffff",
+      "align": "center",
+      "startTime": 1,
+      "duration": 4,
+      "trackId": "track-2",
+      "fx": [
+        { "type": "animation", "name": "fadeIn", "duration": 0.5, "position": "in" },
+        { "type": "animation", "name": "slideUp", "duration": 0.5, "position": "in" },
+        { "type": "animation", "name": "fadeOut", "duration": 0.5, "position": "out" }
+      ]
+    },
+    {
+      "type": "text",
+      "x": 960,
+      "y": 550,
+      "text": "to our channel",
+      "fontSize": 48,
+      "fontFamily": "Arial",
+      "color": "#4a90d9",
+      "align": "center",
+      "startTime": 2,
+      "duration": 3,
+      "trackId": "track-3",
+      "fx": [
+        { "type": "animation", "name": "fadeIn", "duration": 0.8, "position": "in", "easing": "ease-out" },
+        { "type": "animation", "name": "fadeOut", "duration": 0.5, "position": "out" }
+      ]
+    },
+    {
+      "type": "circle",
+      "x": 960,
+      "y": 750,
+      "radius": 40,
+      "fillColor": "#e74c3c",
+      "startTime": 3,
+      "duration": 2,
+      "trackId": "track-4",
+      "fx": [
+        { "type": "animation", "name": "zoomIn", "duration": 0.3, "position": "in", "easing": "ease-out" },
+        { "type": "animation", "name": "bounce", "duration": 0.5, "position": "out" }
+      ]
+    }
+  ]
+}
+```

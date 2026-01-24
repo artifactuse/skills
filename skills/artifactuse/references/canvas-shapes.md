@@ -9,14 +9,17 @@ Complete reference for all shape types in Artifactuse.
 | `x` | number | 0 | X position (pixels) |
 | `y` | number | 0 | Y position (pixels) |
 | `rotation` | number | 0 | Rotation (degrees) |
-| `opacity` | number | 1 | Opacity (0-1) |
-| `fill` | string | "#000000" | Fill color (hex or "transparent") |
-| `stroke` | string | "transparent" | Stroke color |
-| `strokeWidth` | number | 1 | Stroke width (pixels) |
+| `opacity` | number | 100 | Opacity (0-100) |
+| `fillColor` | string | - | Fill color (hex or "transparent") |
+| `color` | string | "#1e1e1e" | Stroke color |
+| `lineWidth` | number | 2 | Stroke width (pixels) |
 | `tiltX` | number | 0 | 3D tilt forward/backward in radians (±1.047 max) |
 | `tiltY` | number | 0 | 3D tilt left/right in radians (±1.047 max) |
+| `visible` | boolean | true | Whether shape is visible |
 
 ## Rectangle
+
+`x, y` is the **top-left corner**.
 
 ```json
 {
@@ -25,14 +28,35 @@ Complete reference for all shape types in Artifactuse.
   "y": 100,
   "width": 200,
   "height": 150,
-  "fill": "#3498db",
-  "stroke": "#2980b9",
-  "strokeWidth": 2,
+  "fillColor": "#3498db",
+  "color": "#2980b9",
+  "lineWidth": 2,
   "cornerRadius": 10
 }
 ```
 
+### Individual Corner Radii
+
+```json
+{
+  "type": "rect",
+  "x": 100,
+  "y": 100,
+  "width": 200,
+  "height": 150,
+  "fillColor": "#3498db",
+  "cornerRadii": {
+    "tl": 20,
+    "tr": 10,
+    "br": 20,
+    "bl": 10
+  }
+}
+```
+
 ## Circle
+
+`x, y` is the **center point**.
 
 ```json
 {
@@ -40,13 +64,15 @@ Complete reference for all shape types in Artifactuse.
   "x": 200,
   "y": 200,
   "radius": 50,
-  "fill": "#e74c3c",
-  "stroke": "#c0392b",
-  "strokeWidth": 2
+  "fillColor": "#e74c3c",
+  "color": "#c0392b",
+  "lineWidth": 2
 }
 ```
 
 ## Ellipse
+
+`x, y` is the **center point**.
 
 ```json
 {
@@ -55,73 +81,147 @@ Complete reference for all shape types in Artifactuse.
   "y": 200,
   "radiusX": 80,
   "radiusY": 50,
-  "fill": "#9b59b6"
+  "fillColor": "#9b59b6"
 }
 ```
 
 ## Diamond
 
+`x, y` is the **center point**.
+
 ```json
 {
   "type": "diamond",
-  "x": 100,
-  "y": 100,
+  "x": 200,
+  "y": 200,
   "width": 100,
   "height": 100,
-  "fill": "#f39c12"
+  "fillColor": "#f39c12"
+}
+```
+
+You can also use `size` for equal width/height:
+
+```json
+{
+  "type": "diamond",
+  "x": 200,
+  "y": 200,
+  "size": 100,
+  "fillColor": "#f39c12"
 }
 ```
 
 ## Triangle
 
+`x, y` is the **center point**.
+
 ```json
 {
   "type": "triangle",
-  "x": 100,
-  "y": 100,
-  "width": 100,
-  "height": 100,
-  "fill": "#1abc9c"
+  "x": 200,
+  "y": 200,
+  "size": 100,
+  "fillColor": "#1abc9c"
+}
+```
+
+Or define custom vertices:
+
+```json
+{
+  "type": "triangle",
+  "x1": 200,
+  "y1": 100,
+  "x2": 300,
+  "y2": 250,
+  "x3": 100,
+  "y3": 250,
+  "fillColor": "#1abc9c"
 }
 ```
 
 ## Line
 
+Uses `x1, y1` (start) and `x2, y2` (end).
+
 ```json
 {
   "type": "line",
-  "x": 100,
-  "y": 100,
+  "x1": 100,
+  "y1": 100,
   "x2": 300,
   "y2": 200,
-  "stroke": "#34495e",
-  "strokeWidth": 3
+  "color": "#34495e",
+  "lineWidth": 3
+}
+```
+
+### Curved Line
+
+Add a `controlPoint` for quadratic bezier curve:
+
+```json
+{
+  "type": "line",
+  "x1": 100,
+  "y1": 100,
+  "x2": 300,
+  "y2": 100,
+  "controlPoint": { "x": 200, "y": 50 },
+  "color": "#34495e",
+  "lineWidth": 3
 }
 ```
 
 ## Arrow
 
+Uses `x1, y1` (start) and `x2, y2` (end).
+
 ```json
 {
   "type": "arrow",
-  "x": 100,
-  "y": 100,
+  "x1": 100,
+  "y1": 100,
   "x2": 300,
   "y2": 100,
-  "stroke": "#2c3e50",
-  "strokeWidth": 3,
+  "color": "#2c3e50",
+  "lineWidth": 3,
   "arrowType": "single",
   "arrowHeadStyle": "triangle",
-  "arrowSize": "medium"
+  "arrowHeadSize": "medium",
+  "headSize": 12
 }
 ```
 
-Arrow options:
-- `arrowType`: "single", "double", "none"
-- `arrowHeadStyle`: "triangle", "open", "diamond", "circle"
-- `arrowSize`: "small", "medium", "large"
+### Arrow Options
+
+| Property | Values | Description |
+|----------|--------|-------------|
+| `arrowType` | `"single"`, `"double"`, `"none"` | Arrow head placement |
+| `arrowHeadStyle` | `"triangle"`, `"open"`, `"diamond"`, `"circle"` | Head style |
+| `arrowHeadSize` | `"small"`, `"medium"`, `"large"` | Size multiplier |
+| `headSize` | number | Base head size in pixels (default: 12) |
+
+### Curved Arrow
+
+```json
+{
+  "type": "arrow",
+  "x1": 100,
+  "y1": 100,
+  "x2": 300,
+  "y2": 100,
+  "controlPoint": { "x": 200, "y": 50 },
+  "color": "#2c3e50",
+  "lineWidth": 3,
+  "arrowType": "single"
+}
+```
 
 ## Text
+
+`x, y` is the **top-left** by default. When `align: "center"`, `x` is the **center point**.
 
 ```json
 {
@@ -131,15 +231,45 @@ Arrow options:
   "text": "Hello World",
   "fontSize": 48,
   "fontFamily": "Arial",
-  "fill": "#333333",
-  "fontWeight": "bold",
-  "fontStyle": "normal",
-  "textAlign": "center",
-  "lineHeight": 1.2
+  "color": "#333333",
+  "bold": true,
+  "italic": false,
+  "underline": false,
+  "align": "left",
+  "lineHeight": 1.3
 }
 ```
 
-**Note**: When `textAlign: "center"`, the `x` position is the center point of the text.
+### Text Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `text` | string | "" | Text content (supports `\n` for newlines) |
+| `fontSize` | number | 16 | Font size in pixels |
+| `fontFamily` | string | "sans-serif" | Font family |
+| `color` | string | "#1e1e1e" | Text color |
+| `bold` | boolean | false | Bold text |
+| `italic` | boolean | false | Italic text |
+| `underline` | boolean | false | Underlined text |
+| `align` | string | "left" | `"left"`, `"center"`, `"right"` |
+| `lineHeight` | number | 1.3 | Line height multiplier |
+| `width` | number | - | If set, enables text wrapping |
+
+### Text Box (Word Wrap)
+
+```json
+{
+  "type": "text",
+  "x": 100,
+  "y": 100,
+  "width": 300,
+  "text": "This is a long text that will automatically wrap within the specified width.",
+  "fontSize": 16,
+  "fontFamily": "Arial",
+  "color": "#333333",
+  "align": "left"
+}
+```
 
 ## Image
 
@@ -151,11 +281,25 @@ Arrow options:
   "width": 400,
   "height": 300,
   "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-  "opacity": 1,
-  "cropX": 0,
-  "cropY": 0,
-  "cropWidth": 400,
-  "cropHeight": 300
+  "opacity": 100,
+  "cornerRadius": 10
+}
+```
+
+### Image with Crop
+
+```json
+{
+  "type": "image",
+  "x": 100,
+  "y": 100,
+  "width": 400,
+  "height": 300,
+  "src": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+  "cropX": 100,
+  "cropY": 50,
+  "cropWidth": 600,
+  "cropHeight": 400
 }
 ```
 
@@ -166,30 +310,30 @@ Arrow options:
 
 ## Path (Custom Shapes)
 
-Paths allow creating custom shapes using bezier curves:
+Paths allow creating custom shapes using bezier curves. Segments use `point: [x, y]` array format.
 
 ```json
 {
   "type": "path",
-  "x": 100,
-  "y": 100,
+  "x": 0,
+  "y": 0,
   "segments": [
-    { "x": 0, "y": 50 },
-    { "x": 50, "y": 0, "handleIn": { "x": 0, "y": -30 }, "handleOut": { "x": 30, "y": 0 } },
-    { "x": 100, "y": 50, "handleIn": { "x": 0, "y": -30 } }
+    { "point": [0, 50] },
+    { "point": [50, 0], "handleIn": [-15, 0], "handleOut": [15, 0] },
+    { "point": [100, 50], "handleIn": [0, -30] }
   ],
   "closed": true,
-  "fill": "#e74c3c"
+  "fillColor": "#e74c3c"
 }
 ```
 
-### Path Segment Properties
+### Segment Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `x`, `y` | number | Anchor point position (relative to shape x,y) |
-| `handleIn` | object | Incoming bezier handle `{ x, y }` |
-| `handleOut` | object | Outgoing bezier handle `{ x, y }` |
+| `point` | `[x, y]` | Anchor point position (array format) |
+| `handleIn` | `[dx, dy]` | Incoming bezier handle (relative offset) |
+| `handleOut` | `[dx, dy]` | Outgoing bezier handle (relative offset) |
 
 ### Common Path Shapes
 
@@ -197,16 +341,14 @@ Paths allow creating custom shapes using bezier curves:
 ```json
 {
   "type": "path",
-  "x": 100,
-  "y": 100,
   "segments": [
-    { "x": 50, "y": 80 },
-    { "x": 0, "y": 30, "handleIn": { "x": 20, "y": 30 }, "handleOut": { "x": -15, "y": -20 } },
-    { "x": 50, "y": 0, "handleIn": { "x": -25, "y": 0 }, "handleOut": { "x": 25, "y": 0 } },
-    { "x": 100, "y": 30, "handleIn": { "x": 15, "y": -20 }, "handleOut": { "x": -20, "y": 30 } }
+    { "point": [50, 80] },
+    { "point": [0, 30], "handleIn": [20, 30], "handleOut": [-15, -20] },
+    { "point": [50, 0], "handleIn": [-25, 0], "handleOut": [25, 0] },
+    { "point": [100, 30], "handleIn": [15, -20], "handleOut": [-20, 30] }
   ],
   "closed": true,
-  "fill": "#e74c3c"
+  "fillColor": "#e74c3c"
 }
 ```
 
@@ -214,22 +356,20 @@ Paths allow creating custom shapes using bezier curves:
 ```json
 {
   "type": "path",
-  "x": 100,
-  "y": 100,
   "segments": [
-    { "x": 50, "y": 0 },
-    { "x": 61, "y": 35 },
-    { "x": 100, "y": 38 },
-    { "x": 68, "y": 60 },
-    { "x": 79, "y": 100 },
-    { "x": 50, "y": 75 },
-    { "x": 21, "y": 100 },
-    { "x": 32, "y": 60 },
-    { "x": 0, "y": 38 },
-    { "x": 39, "y": 35 }
+    { "point": [50, 0] },
+    { "point": [61, 35] },
+    { "point": [100, 38] },
+    { "point": [68, 60] },
+    { "point": [79, 100] },
+    { "point": [50, 75] },
+    { "point": [21, 100] },
+    { "point": [32, 60] },
+    { "point": [0, 38] },
+    { "point": [39, 35] }
   ],
   "closed": true,
-  "fill": "#f1c40f"
+  "fillColor": "#f1c40f"
 }
 ```
 
@@ -237,18 +377,16 @@ Paths allow creating custom shapes using bezier curves:
 ```json
 {
   "type": "path",
-  "x": 100,
-  "y": 100,
   "segments": [
-    { "x": 50, "y": 0 },
-    { "x": 100, "y": 25 },
-    { "x": 100, "y": 75 },
-    { "x": 50, "y": 100 },
-    { "x": 0, "y": 75 },
-    { "x": 0, "y": 25 }
+    { "point": [50, 0] },
+    { "point": [100, 25] },
+    { "point": [100, 75] },
+    { "point": [50, 100] },
+    { "point": [0, 75] },
+    { "point": [0, 25] }
   ],
   "closed": true,
-  "fill": "#3498db"
+  "fillColor": "#3498db"
 }
 ```
 
@@ -262,14 +400,28 @@ Groups combine shapes that move/transform together:
   "x": 100,
   "y": 100,
   "rotation": 45,
+  "scaleX": 1,
+  "scaleY": 1,
+  "opacity": 100,
   "children": [
-    { "type": "rect", "x": 0, "y": 0, "width": 50, "height": 50, "fill": "#e74c3c" },
-    { "type": "circle", "x": 50, "y": 50, "radius": 25, "fill": "#3498db" }
+    { "type": "rect", "x": 0, "y": 0, "width": 50, "height": 50, "fillColor": "#e74c3c" },
+    { "type": "circle", "x": 50, "y": 50, "radius": 25, "fillColor": "#3498db" }
   ]
 }
 ```
 
-Children positions are relative to the group's x,y.
+Children positions are **relative** to the group's x,y.
+
+### Group Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `x`, `y` | number | 0 | Group position offset |
+| `rotation` | number | 0 | Rotation in degrees |
+| `scaleX` | number | 1 | Horizontal scale |
+| `scaleY` | number | 1 | Vertical scale |
+| `opacity` | number | 100 | Group opacity (0-100) |
+| `children` | array | [] | Child shapes |
 
 ## Frame
 
@@ -282,17 +434,45 @@ Frames are containers that group shapes (like Figma frames):
   "y": 0,
   "width": 400,
   "height": 300,
-  "fill": "#f5f5f5",
-  "stroke": "#cccccc",
-  "strokeWidth": 1,
+  "name": "My Frame",
+  "fillColor": "#f5f5f5",
+  "color": "#6366f1",
+  "lineWidth": 1,
+  "clipContent": false,
+  "cornerRadius": 8,
   "children": [
-    { "type": "rect", "x": 20, "y": 20, "width": 100, "height": 100, "fill": "#3498db" },
-    { "type": "text", "x": 20, "y": 140, "text": "Inside frame", "fontSize": 16, "fill": "#333" }
+    { "type": "rect", "x": 20, "y": 20, "width": 100, "height": 100, "fillColor": "#3498db" },
+    { "type": "text", "x": 20, "y": 140, "text": "Inside frame", "fontSize": 16, "color": "#333" }
   ]
 }
 ```
 
 **Important**: Frames cannot rotate (rotation is ignored). Children positions are relative to the frame.
+
+### Frame Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | string | "Frame" | Frame label |
+| `clipContent` | boolean | false | Clip children to frame bounds |
+| `cornerRadius` | number | 0 | Corner radius |
+| `cornerRadii` | object | - | Individual corners `{ tl, tr, br, bl }` |
+
+## Freehand Drawing
+
+```json
+{
+  "type": "freehand",
+  "color": "#1e1e1e",
+  "lineWidth": 2,
+  "points": [
+    { "x": 100, "y": 100 },
+    { "x": 105, "y": 102 },
+    { "x": 110, "y": 105 },
+    { "x": 120, "y": 108 }
+  ]
+}
+```
 
 ## 3D Tilt
 
@@ -316,7 +496,7 @@ Common values:
   "y": 100,
   "width": 200,
   "height": 150,
-  "fill": "#3498db",
+  "fillColor": "#3498db",
   "tiltX": 0.5,
   "tiltY": 0.3
 }
