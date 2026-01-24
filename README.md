@@ -41,36 +41,6 @@ Works with:
 - Gemini CLI
 - And 15+ other AI coding tools
 
-## Quick Example
-
-```video
-{
-  "width": 1920,
-  "height": 1080,
-  "currentPreset": "1080p",
-  "duration": 10,
-  "background": "#1a1a2e",
-  "shapes": [
-    {
-      "type": "text",
-      "x": 960,
-      "y": 540,
-      "text": "Welcome",
-      "fontSize": 120,
-      "fontFamily": "Arial",
-      "fontWeight": "bold",
-      "fill": "#ffffff",
-      "textAlign": "center",
-      "startTime": 0,
-      "duration": 5,
-      "fx": [
-        { "type": "animation", "name": "fadeIn", "duration": 0.5, "position": "in" }
-      ]
-    }
-  ]
-}
-```
-
 ## Documentation
 
 - [SKILL.md](./skills/artifactuse/SKILL.md) — Main skill file
