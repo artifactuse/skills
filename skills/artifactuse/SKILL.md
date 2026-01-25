@@ -37,7 +37,17 @@ Activate this skill when the user asks for:
 
 ## Output Format
 
-### Canvas (Static)
+### Canvas (Static / Infinite Canvas)
+```canvas
+{
+  "backgroundColor": "#ffffff",
+  "shapes": [...]
+}
+```
+
+Canvas mode is an **infinite canvas** - shapes can be placed anywhere without bounds. The `width` and `height` properties are optional metadata used only for export purposes (PNG, SVG). They do not constrain where shapes can be placed.
+
+If you need specific export dimensions:
 ```canvas
 {
   "width": 800,
@@ -58,6 +68,8 @@ Activate this skill when the user asks for:
   "shapes": [...]
 }
 ```
+
+Video mode has a **fixed export frame** - `width` and `height` are required and define the visible area.
 
 **Video Duration Rule**: Set `duration` to 5 seconds longer than when the last clip ends.
 
@@ -98,7 +110,7 @@ All shapes support: `x`, `y`, `fillColor`, `color` (stroke), `lineWidth`, `rotat
 ### Canvas Tools
 | Tool | Description |
 |------|-------------|
-| `craft_canvas` | Initialize a new canvas with dimensions and background |
+| `craft_canvas` | Initialize a new infinite canvas (dimensions optional, for export only) |
 | `craft_shape` | Add a single shape to the canvas |
 | `craft_shapes` | Add multiple shapes at once (batch) |
 | `update_shape` | Update properties of an existing shape by ID or index |
@@ -138,7 +150,7 @@ You can freely mix singular and plural tools in the same workflow. Use whichever
 
 ### Example Workflow: Fitness Gym Banner (Canvas)
 ```javascript
-// 1. Initialize canvas
+// 1. Initialize canvas (dimensions optional, used for export)
 craft_canvas({ width: 2560, height: 1440, backgroundColor: "#0a0a0a" })
 
 // 2. Add background elements in batch
@@ -265,13 +277,14 @@ For detailed information, read these reference files:
 
 ## Critical Rules
 
-1. **Frame boundaries**: All elements must stay within canvas dimensions
-2. **Video tracks**: Overlapping clips MUST have different `trackId` values
-3. **Animations**: Use the `fx` array on shapes, NOT a `keyframes` property
-4. **Media sources**: Use CORS-friendly URLs (Unsplash, Pexels, Pixabay)
-5. **Centered text**: When `align: "center"`, the `x` is the center point
-6. **Property names**: Use `fillColor` for fill, `color` for stroke, `lineWidth` for stroke width
-7. **Shape IDs**: Shapes get auto-generated IDs; use `list_shapes` to find them for editing
+1. **Canvas mode is infinite**: Shapes can be placed anywhere; `width`/`height` are optional export metadata
+2. **Video mode has fixed bounds**: All elements should stay within video dimensions for the export frame
+3. **Video tracks**: Overlapping clips MUST have different `trackId` values
+4. **Animations**: Use the `fx` array on shapes, NOT a `keyframes` property
+5. **Media sources**: Use CORS-friendly URLs (Unsplash, Pexels, Pixabay)
+6. **Centered text**: When `align: "center"`, the `x` is the center point
+7. **Property names**: Use `fillColor` for fill, `color` for stroke, `lineWidth` for stroke width
+8. **Shape IDs**: Shapes get auto-generated IDs; use `list_shapes` to find them for editing
 
 ## Quick Example: Canvas
 
