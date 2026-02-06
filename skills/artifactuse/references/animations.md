@@ -2,6 +2,10 @@
 
 Artifactuse supports animations through the `fx` array on individual shapes.
 
+This file covers **shape-level** effects applied via the `fx` array property on individual clips.
+
+For **timeline-level** effects (global effects, transitions, filters on FX tracks), see **[video-timeline.md](./video-timeline.md)**.
+
 ## Important Limitations
 
 **NOT Supported:**
@@ -10,15 +14,27 @@ Artifactuse supports animations through the `fx` array on individual shapes.
 - ❌ Animating arbitrary properties over time
 - ❌ CSS-style keyframe animations
 - ❌ Nested text inside shapes
+- ❌ **Multiple animations per clip** (only ONE animation allowed)
 
 **Use Instead:**
 - ✅ The `fx` array for entrance/exit animations
 - ✅ Timeline effects for global filters
 - ✅ Viewport keyframes for camera animation
 
+## FX Limits
+
+| FX Type | Limit per Clip | Notes |
+|---------|---------------|-------|
+| **Animation** | 1 | Only one animation per clip. Adding a new animation replaces the existing one. |
+| **Filter** | Unlimited | Multiple filters can be stacked (e.g., brightness + contrast + blur). |
+
+**Animation duration constraint:** Animation duration cannot exceed the clip's duration.
+
 ## The `fx` Array
 
-Add an `fx` array to any shape to apply filters and animations:
+Add an `fx` array to any shape to apply filters and animations.
+
+**Remember:** Only ONE animation per clip, but multiple filters are allowed.
 
 ```json
 {
@@ -31,28 +47,24 @@ Add an `fx` array to any shape to apply filters and animations:
   "startTime": 0,
   "duration": 5,
   "fx": [
-    {
-      "type": "filter",
-      "name": "brightness",
-      "value": 120
-    },
-    {
-      "type": "animation",
-      "name": "slideUp",
-      "duration": 0.5,
-      "position": "in",
-      "easing": "ease-out"
-    },
-    {
-      "type": "animation",
-      "name": "fadeOut",
-      "duration": 0.5,
-      "position": "out",
-      "easing": "ease-in"
-    }
+    { "type": "filter", "name": "brightness", "value": 120 },
+    { "type": "filter", "name": "contrast", "value": 110 },
+    { "type": "animation", "name": "fadeIn", "duration": 0.5, "position": "in", "easing": "ease-out" }
   ]
 }
 ```
+
+To have both entrance and exit effects, use `position: "both"`:
+
+```json
+{
+  "fx": [
+    { "type": "animation", "name": "fade", "duration": 1, "position": "both", "easing": "ease-in-out" }
+  ]
+}
+```
+
+This plays the animation at both the start (fade in) and end (fade out) of the clip, with the duration split between them.
 
 ## Filter FX
 
@@ -91,11 +103,11 @@ Add an `fx` array to any shape to apply filters and animations:
 | Property | Type | Description |
 |----------|------|-------------|
 | `name` | string | Animation type |
-| `duration` | number | Duration in seconds (default: 0.5) |
-| `position` | string | "in" (entrance), "out" (exit), or "both" |
+| `duration` | number | Duration in seconds (default: 0.5, max: clip duration) |
+| `position` | string | "in" (entrance), "out" (exit), or "both" (entrance + exit) |
 | `easing` | string | "linear", "ease-in", "ease-out", "ease-in-out" |
 
-**Limitation**: Each shape supports one animation per position.
+**IMPORTANT:** Only ONE animation per clip. Use `position: "both"` if you need entrance AND exit animation.
 
 ### Available Animations
 
@@ -123,6 +135,8 @@ Add an `fx` array to any shape to apply filters and animations:
 
 ### 3D Animation Example
 
+Use `position: "both"` for entrance and exit with the same animation:
+
 ```json
 {
   "type": "rect",
@@ -137,20 +151,15 @@ Add an `fx` array to any shape to apply filters and animations:
     {
       "type": "animation",
       "name": "rotate3d",
-      "duration": 0.8,
-      "position": "in",
-      "easing": "ease-out"
-    },
-    {
-      "type": "animation",
-      "name": "rotate3d",
-      "duration": 0.6,
-      "position": "out",
-      "easing": "ease-in"
+      "duration": 1.4,
+      "position": "both",
+      "easing": "ease-in-out"
     }
   ]
 }
 ```
+
+With `position: "both"`, the duration is split: 0.7s for entrance, 0.7s for exit.
 
 ## Cursor Animation
 
@@ -303,40 +312,6 @@ Create pan and zoom effects:
 
 This zooms into a specific area at 3 seconds, then zooms back out at 6 seconds.
 
-## Timeline Effects
-
-Global effects placed on FX tracks:
-
-```json
-{
-  "type": "effect",
-  "subtype": "dropShadow",
-  "name": "Drop Shadow",
-  "startTime": 0,
-  "duration": 5,
-  "trackId": "track-fx-1",
-  "intensity": 100,
-  "offsetX": 5,
-  "offsetY": 5,
-  "blur": 10,
-  "color": "rgba(0,0,0,0.5)"
-}
-```
-
-| Subtype | Parameters | Description |
-|---------|-----------|-------------|
-| `dropShadow` | offsetX, offsetY, blur, color | Drop shadow |
-| `glow` | radius, color | Outer glow |
-| `outline` | width, color | Stroke outline |
-| `vignette` | radius | Dark edges |
-| `blur` | radius | Gaussian blur |
-| `grain` | amount | Film grain |
-| `glitch` | intensity, frequency | Digital glitch |
-| `chromatic` | offset | Chromatic aberration |
-| `pixelate` | size | Pixelation |
-| `sharpen` | amount | Sharpening |
-| `emboss` | - | Embossed 3D |
-
 ## Complete Video Example with Animations
 
 ```json
@@ -372,9 +347,7 @@ Global effects placed on FX tracks:
       "duration": 4,
       "trackId": "track-2",
       "fx": [
-        { "type": "animation", "name": "fadeIn", "duration": 0.5, "position": "in" },
-        { "type": "animation", "name": "slideUp", "duration": 0.5, "position": "in" },
-        { "type": "animation", "name": "fadeOut", "duration": 0.5, "position": "out" }
+        { "type": "animation", "name": "fade", "duration": 1, "position": "both", "easing": "ease-out" }
       ]
     },
     {
@@ -390,8 +363,7 @@ Global effects placed on FX tracks:
       "duration": 3,
       "trackId": "track-3",
       "fx": [
-        { "type": "animation", "name": "fadeIn", "duration": 0.8, "position": "in", "easing": "ease-out" },
-        { "type": "animation", "name": "fadeOut", "duration": 0.5, "position": "out" }
+        { "type": "animation", "name": "slideUp", "duration": 0.8, "position": "both", "easing": "ease-out" }
       ]
     },
     {
@@ -404,8 +376,7 @@ Global effects placed on FX tracks:
       "duration": 2,
       "trackId": "track-4",
       "fx": [
-        { "type": "animation", "name": "zoomIn", "duration": 0.3, "position": "in", "easing": "ease-out" },
-        { "type": "animation", "name": "bounce", "duration": 0.5, "position": "out" }
+        { "type": "animation", "name": "zoom", "duration": 0.6, "position": "both", "easing": "ease-out" }
       ]
     }
   ]

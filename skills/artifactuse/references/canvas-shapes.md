@@ -13,9 +13,28 @@ Complete reference for all shape types in Artifactuse.
 | `fillColor` | string | - | Fill color (hex or "transparent") |
 | `color` | string | "#1e1e1e" | Stroke color |
 | `lineWidth` | number | 2 | Stroke width (pixels) |
-| `tiltX` | number | 0 | 3D tilt forward/backward in radians (±1.047 max) |
-| `tiltY` | number | 0 | 3D tilt left/right in radians (±1.047 max) |
+| `tiltX` | number | 0 | 3D tilt forward/backward in radians (±1.047 max ≈ ±60°) |
+| `tiltY` | number | 0 | 3D tilt left/right in radians (±1.047 max ≈ ±60°) |
 | `visible` | boolean | true | Whether shape is visible |
+| `scaleX` | number | 1 | Horizontal scale (-1 to flip horizontally) |
+| `scaleY` | number | 1 | Vertical scale (-1 to flip vertically) |
+
+### Sketchy Mode Properties
+
+These properties enable hand-drawn style rendering (Rough.js). Only works on: rect, circle, ellipse, diamond, triangle, line, arrow.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `renderMode` | string | "smooth" | `"smooth"` or `"sketchy"` |
+| `roughness` | number | 1 | Sketchy intensity (0-2) |
+| `seed` | number | random | Random seed for deterministic sketchy output |
+
+### Stroke Style Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `strokeStyle` | string | "solid" | `"solid"`, `"dashed"`, or `"dotted"` |
+| `edgeStyle` | string | "sharp" | `"sharp"` or `"round"` (affects line caps/joins) |
 
 ## Rectangle
 
@@ -219,6 +238,79 @@ Uses `x1, y1` (start) and `x2, y2` (end).
 }
 ```
 
+## Line/Arrow Connections
+
+Lines and arrows can connect to shapes. When a connected shape moves, the line endpoint automatically updates to maintain the connection.
+
+### Connection Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `startConnection` | object | Connection data for start endpoint (x1, y1) |
+| `endConnection` | object | Connection data for end endpoint (x2, y2) |
+
+### Connection Types
+
+**Edge Connection** - Endpoint snaps to shape edge:
+```json
+{
+  "shapeId": "rect_123",
+  "shapeIndex": 0,
+  "edge": "right",
+  "t": 0.5
+}
+```
+
+**Inside Connection** - Endpoint inside shape bounds:
+```json
+{
+  "shapeId": "circle_456",
+  "shapeIndex": 2,
+  "inside": true,
+  "relativeX": 0.5,
+  "relativeY": 0.5
+}
+```
+
+### Edge Names by Shape Type
+
+| Shape | Edge Names |
+|-------|------------|
+| Rectangle, Image, Text, Frame | `top`, `right`, `bottom`, `left` |
+| Circle, Ellipse | `circumference` |
+| Diamond | `top-right`, `bottom-right`, `bottom-left`, `top-left` |
+| Triangle | `edge-0`, `edge-1`, `edge-2` |
+| Path | `segment-N` (N = segment index) |
+
+### Connected Arrow Example
+
+```json
+{
+  "type": "arrow",
+  "x1": 150,
+  "y1": 200,
+  "x2": 350,
+  "y2": 200,
+  "color": "#2c3e50",
+  "lineWidth": 2,
+  "arrowType": "single",
+  "startConnection": {
+    "shapeId": "rect_1",
+    "shapeIndex": 0,
+    "edge": "right",
+    "t": 0.5
+  },
+  "endConnection": {
+    "shapeId": "circle_2",
+    "shapeIndex": 1,
+    "edge": "circumference",
+    "t": 0.75
+  }
+}
+```
+
+**Connectable Shapes:** All shapes except line, arrow, audio, effect, filter, transition, viewportKeyframe, cursor.
+
 ## Text
 
 `x, y` is the **top-left** by default. When `align: "center"`, `x` is the **center point**.
@@ -390,6 +482,40 @@ Paths allow creating custom shapes using bezier curves. Segments use `point: [x,
 }
 ```
 
+### Compound Paths (Shapes with Holes)
+
+Compound paths contain multiple child paths. Inner paths create holes using even-odd fill rule.
+
+```json
+{
+  "type": "path",
+  "isCompound": true,
+  "fillColor": "#3498db",
+  "children": [
+    {
+      "segments": [
+        { "point": [0, 0] },
+        { "point": [100, 0] },
+        { "point": [100, 100] },
+        { "point": [0, 100] }
+      ],
+      "closed": true
+    },
+    {
+      "segments": [
+        { "point": [25, 25] },
+        { "point": [75, 25] },
+        { "point": [75, 75] },
+        { "point": [25, 75] }
+      ],
+      "closed": true
+    }
+  ]
+}
+```
+
+This creates a square with a square hole in the center.
+
 ## Group
 
 Groups combine shapes that move/transform together:
@@ -453,10 +579,15 @@ Frames are containers that group shapes (like Figma frames):
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `name` | string | "Frame" | Frame label |
-| `clipContent` | boolean | false | Clip children to frame bounds |
+| `name` | string | "Frame" | Frame label (shown above frame) |
+| `clipContent` | boolean | true | When true, children outside frame bounds are hidden |
 | `cornerRadius` | number | 0 | Corner radius |
 | `cornerRadii` | object | - | Individual corners `{ tl, tr, br, bl }` |
+
+### clipContent Behavior
+
+- `clipContent: true` (default) - Children that extend beyond the frame boundaries are clipped/hidden
+- `clipContent: false` - Children can overflow and render outside the frame bounds
 
 ## Freehand Drawing
 

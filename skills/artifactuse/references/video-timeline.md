@@ -35,6 +35,34 @@ Tracks organize shapes vertically in the timeline:
 | Background + foreground | **Required** | Background on `track-1`, elements on higher tracks |
 | Audio | Recommended | Use `track-audio` |
 
+### FX Tracks
+
+FX tracks are special tracks for effects, filters, and transitions. They differ from regular video/audio tracks:
+
+| Track Type | ID Format | Purpose |
+|------------|-----------|---------|
+| Video tracks | `track-1`, `track-2`, etc. | Hold video, image, text, shapes |
+| Audio tracks | `track-audio`, `audio-1`, etc. | Hold audio clips |
+| FX tracks | `track-fx-1`, `track-fx-2`, etc. | Hold effects, filters, transitions |
+
+**FX Track Behavior:**
+- Created automatically when you add the first effect/filter/transition
+- Multiple FX tracks can exist (for overlapping effects)
+- FX clips on higher tracks are applied later (stacking order)
+- Effects on FX tracks apply to the **entire canvas** during their time range
+
+```json
+{
+  "type": "effect",
+  "subtype": "vignette",
+  "startTime": 0,
+  "duration": 10,
+  "trackId": "track-fx-1",
+  "intensity": 80,
+  "radius": 50
+}
+```
+
 ### Example: Overlapping Clips (trackId required)
 
 ```json
@@ -264,6 +292,10 @@ All elements must stay within canvas dimensions.
 
 ## Timeline Transitions
 
+Transitions are standalone clips on FX tracks that create visual effects between scenes or over specific time ranges.
+
+### Transition Structure
+
 ```json
 {
   "type": "transition",
@@ -276,12 +308,95 @@ All elements must stay within canvas dimensions.
 }
 ```
 
-Available subtypes:
-- `fade`, `dissolve`
-- `wipeLeft`, `wipeRight`, `wipeUp`, `wipeDown`
-- `slideLeft`, `slideRight`, `slideUp`, `slideDown`
-- `zoomIn`, `zoomOut`, `crossZoom`
-- `blur`, `spin`, `flip`, `bounce`, `elastic`
+### Transition Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `type` | string | - | Must be `"transition"` |
+| `subtype` | string | - | Transition type (see table below) |
+| `name` | string | - | Display name |
+| `startTime` | number | 0 | When transition starts (seconds) |
+| `duration` | number | 1 | Transition duration (seconds) |
+| `trackId` | string | - | FX track ID (`track-fx-1`, etc.) |
+| `easing` | string | `"linear"` | Easing function |
+
+### Easing Options
+
+| Easing | Description |
+|--------|-------------|
+| `linear` | Constant speed |
+| `ease-in` | Slow start, fast end |
+| `ease-out` | Fast start, slow end |
+| `ease-in-out` | Slow start and end |
+
+### Available Transitions (19 types)
+
+| Subtype | Name | Description |
+|---------|------|-------------|
+| `fade` | Fade | Opacity crossfade |
+| `dissolve` | Dissolve | Gradual dissolve effect |
+| `wipeLeft` | Wipe Left | Wipe from right to left |
+| `wipeRight` | Wipe Right | Wipe from left to right |
+| `wipeUp` | Wipe Up | Wipe from bottom to top |
+| `wipeDown` | Wipe Down | Wipe from top to bottom |
+| `slideLeft` | Slide Left | Slide content to the left |
+| `slideRight` | Slide Right | Slide content to the right |
+| `slideUp` | Slide Up | Slide content upward |
+| `slideDown` | Slide Down | Slide content downward |
+| `zoomIn` | Zoom In | Zoom into the frame |
+| `zoomOut` | Zoom Out | Zoom out of the frame |
+| `crossZoom` | Cross Zoom | Zoom with crossfade |
+| `kenBurns` | Ken Burns | Pan and zoom effect |
+| `blur` | Blur | Blur in/out transition |
+| `spin` | Spin | Rotation transition |
+| `flip` | Flip | 3D flip effect |
+| `bounce` | Bounce | Bouncy transition |
+| `elastic` | Elastic | Elastic spring effect |
+
+### Transition Example
+
+```json
+{
+  "width": 1920,
+  "height": 1080,
+  "duration": 10,
+  "shapes": [
+    {
+      "type": "text",
+      "x": 960,
+      "y": 540,
+      "text": "Scene 1",
+      "fontSize": 72,
+      "color": "#ffffff",
+      "align": "center",
+      "startTime": 0,
+      "duration": 5,
+      "trackId": "track-1"
+    },
+    {
+      "type": "text",
+      "x": 960,
+      "y": 540,
+      "text": "Scene 2",
+      "fontSize": 72,
+      "color": "#ffffff",
+      "align": "center",
+      "startTime": 4,
+      "duration": 6,
+      "trackId": "track-2"
+    },
+    {
+      "type": "transition",
+      "subtype": "wipeLeft",
+      "name": "Wipe Left",
+      "startTime": 4,
+      "duration": 1.5,
+      "trackId": "track-fx-1",
+      "easing": "ease-in-out"
+    }
+  ]
+}
+```
 
 ## Timeline Filters
 
@@ -309,3 +424,234 @@ Available subtypes:
 | `sepia` | 0-100 | 0 | Sepia tone |
 | `invert` | 0-100 | 0 | Inversion |
 | `temperature` | -100-100 | 0 | Color temperature |
+
+## Timeline Effects
+
+Global visual effects applied to the **entire canvas** during their time range. Placed on FX tracks.
+
+### Effect Structure
+
+```json
+{
+  "type": "effect",
+  "subtype": "dropShadow",
+  "name": "Drop Shadow",
+  "startTime": 0,
+  "duration": 5,
+  "trackId": "track-fx-1",
+  "intensity": 100,
+  "offsetX": 5,
+  "offsetY": 5,
+  "blur": 10,
+  "color": "rgba(0,0,0,0.5)"
+}
+```
+
+### Effect Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `type` | string | - | Must be `"effect"` |
+| `subtype` | string | - | Effect type (see table below) |
+| `name` | string | - | Display name |
+| `startTime` | number | 0 | When effect starts (seconds) |
+| `duration` | number | 5 | Effect duration (seconds) |
+| `trackId` | string | - | FX track ID (`track-fx-1`, etc.) |
+| `intensity` | number | 100 | Effect strength (0-100) |
+
+### Available Effects (11 types)
+
+| Subtype | Name | Properties | Description |
+|---------|------|------------|-------------|
+| `dropShadow` | Drop Shadow | `offsetX`, `offsetY`, `blur`, `color` | Drop shadow effect |
+| `glow` | Glow | `radius`, `color` | Outer glow effect |
+| `outline` | Outline | `width`, `color` | Stroke outline |
+| `vignette` | Vignette | `radius` | Dark edges effect |
+| `blur` | Blur | `radius` | Gaussian blur |
+| `grain` | Film Grain | `amount` | Film grain noise |
+| `glitch` | Glitch | `frequency` | Digital glitch effect |
+| `chromatic` | Chromatic Aberration | `offset` | RGB color separation |
+| `pixelate` | Pixelate | `size` | Pixelation effect |
+| `sharpen` | Sharpen | `amount` | Sharpening |
+| `emboss` | Emboss | - | Embossed 3D effect |
+
+### Effect-Specific Properties
+
+**Drop Shadow:**
+```json
+{
+  "type": "effect",
+  "subtype": "dropShadow",
+  "intensity": 100,
+  "offsetX": 5,
+  "offsetY": 5,
+  "blur": 10,
+  "color": "rgba(0,0,0,0.5)"
+}
+```
+
+**Glow:**
+```json
+{
+  "type": "effect",
+  "subtype": "glow",
+  "intensity": 100,
+  "radius": 10,
+  "color": "#ffffff"
+}
+```
+
+**Vignette:**
+```json
+{
+  "type": "effect",
+  "subtype": "vignette",
+  "intensity": 80,
+  "radius": 50
+}
+```
+
+**Film Grain:**
+```json
+{
+  "type": "effect",
+  "subtype": "grain",
+  "intensity": 50,
+  "amount": 30
+}
+```
+
+**Glitch:**
+```json
+{
+  "type": "effect",
+  "subtype": "glitch",
+  "intensity": 70,
+  "frequency": 10
+}
+```
+
+**Chromatic Aberration:**
+```json
+{
+  "type": "effect",
+  "subtype": "chromatic",
+  "intensity": 60,
+  "offset": 5
+}
+```
+
+**Pixelate:**
+```json
+{
+  "type": "effect",
+  "subtype": "pixelate",
+  "intensity": 100,
+  "size": 10
+}
+```
+
+### Effect Example
+
+```json
+{
+  "width": 1920,
+  "height": 1080,
+  "duration": 10,
+  "shapes": [
+    {
+      "type": "text",
+      "x": 960,
+      "y": 540,
+      "text": "Cinematic Title",
+      "fontSize": 96,
+      "color": "#ffffff",
+      "align": "center",
+      "startTime": 0,
+      "duration": 10,
+      "trackId": "track-1"
+    },
+    {
+      "type": "effect",
+      "subtype": "vignette",
+      "name": "Vignette",
+      "startTime": 0,
+      "duration": 10,
+      "trackId": "track-fx-1",
+      "intensity": 80,
+      "radius": 40
+    },
+    {
+      "type": "effect",
+      "subtype": "grain",
+      "name": "Film Grain",
+      "startTime": 0,
+      "duration": 10,
+      "trackId": "track-fx-2",
+      "intensity": 30,
+      "amount": 20
+    }
+  ]
+}
+```
+
+## Effect Systems Comparison
+
+Artifactuse has two distinct effect systems. Understanding when to use each is important.
+
+### Shape-Level FX vs Timeline Effects
+
+| Aspect | Shape-Level FX (`shape.fx`) | Timeline Effects/Filters/Transitions |
+|--------|---------------------------|-------------------------------------|
+| **Storage** | Array on individual clip | Standalone clip in `shapes` |
+| **Scope** | Single clip only | Entire canvas |
+| **Track** | Same track as clip | Dedicated FX tracks |
+| **Duration** | Entire clip duration | Custom start/duration |
+| **Limit** | 1 animation, unlimited filters | Unlimited (can stack) |
+| **Documented in** | animations.md | video-timeline.md |
+
+### When to Use Each
+
+**Use Shape-Level FX (`shape.fx` array) when:**
+- Animating a single clip's entrance/exit (fade in, slide up)
+- Applying filters to one specific clip (brighten one image)
+- Need animation tied to clip's lifecycle
+
+```json
+{
+  "type": "text",
+  "text": "Hello",
+  "fx": [
+    { "type": "animation", "name": "fadeIn", "duration": 0.5, "position": "in" },
+    { "type": "filter", "name": "brightness", "value": 120 }
+  ]
+}
+```
+
+**Use Timeline Effects when:**
+- Applying effects to entire composition (vignette, grain)
+- Time-limited effects (glitch at specific moment)
+- Stacking multiple global effects
+- Scene transitions (wipe, fade between clips)
+
+```json
+{
+  "type": "effect",
+  "subtype": "vignette",
+  "startTime": 0,
+  "duration": 10,
+  "trackId": "track-fx-1"
+}
+```
+
+### Summary Table
+
+| System | Type | Example Use Case |
+|--------|------|------------------|
+| `shape.fx` animations | Entrance/exit | Text fades in |
+| `shape.fx` filters | Per-clip color | Brighten one image |
+| Timeline transitions | Scene changes | Wipe between clips |
+| Timeline filters | Global color | Desaturate entire video |
+| Timeline effects | Visual FX | Add vignette, grain |
+
+For shape-level FX details, see **[animations.md](./animations.md)**.

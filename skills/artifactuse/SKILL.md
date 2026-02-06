@@ -272,8 +272,8 @@ delete_shape({ id: "shape-1737849600000-1" })
 For detailed information, read these reference files:
 
 - **[references/canvas-shapes.md](./references/canvas-shapes.md)** — Complete shape properties and examples
-- **[references/video-timeline.md](./references/video-timeline.md)** — Temporal properties, tracks, audio, video clips
-- **[references/animations.md](./references/animations.md)** — The `fx` array animation system, easing, effects
+- **[references/video-timeline.md](./references/video-timeline.md)** — Temporal properties, tracks, clips, transitions, and timeline effects
+- **[references/animations.md](./references/animations.md)** — The `fx` array for shape-level animations and filters, cursor, camera
 
 ## Critical Rules
 
